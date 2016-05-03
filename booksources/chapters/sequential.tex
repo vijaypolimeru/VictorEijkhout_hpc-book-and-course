@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012
+%%%% by Victor Eijkhout, copyright 2012-6
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -60,7 +60,7 @@ architectures can be described as \indexterm{von Neumann architectures}.
 This describes a design with an undivided memory
 that stores both program and data (`stored program'), and a processing
 unit that executes the instructions, operating on the data in `fetch,
-execute, store' cycle'\footnote{This model with a prescribed sequence
+execute, store cycle'\footnote{This model with a prescribed sequence
   of instructions is also referred to as \indexterm{control flow}.
   This is in contrast to \indexterm{data flow}, which we will
   see in section~\ref{sec:multicore-block}.}.
@@ -71,7 +71,7 @@ hard-wired. It also allows programs to modify themselves or generate
 other programs, since instructions and data are in the same
 storage. This allows us to have editors and compilers: the computer
 treats program code as data to operate on\footnote{At one time, the
-  stored program concept was include as an essential component the
+  stored program concept was included as an essential component the
   ability for a running program to modify its own source. However, it
   was quickly recognized that this leads to unmaintainable code, and
   is rarely done in practice~\cite{EWD:EWD117}.}. In this book we will
@@ -94,7 +94,7 @@ result. These locations are not expressed as memory locations, but as
 \emph{registers}\index{register}: a small number of named memory locations that
 are part of the CPU\footnote {Direct-to-memory architectures are rare,
   though they have existed. The Cyber 205 supercomputer in the 1980s
-  could have 3 data streams, two from memory to the processor, and one
+  could have three data streams, two from memory to the processor, and one
   back from the processor to memory, going on at the same time. Such
   an architecture is only feasible if memory can keep up with the
   processor speed, which is no longer the case these days.}.  As an
@@ -204,14 +204,14 @@ of the multiple cores.
 
 \begin{wrapfigure}{r}{3.5in}
   \includegraphics[scale=.45]{sandybridge-eightcore-ann}
-  \caption{The Intel Sandybridge processor die}
+  \caption{The Intel Sandy Bridge processor die}
   \label{fig:sandybridge}
 \end{wrapfigure}
 
 \Level 2 {Instruction handling}
 
 \index{out-of-order|see{instruction, handling, out-of-order}} The Von
-Neuman model is also unrealistic in that it assumes that all
+Neumann model is also unrealistic in that it assumes that all
 instructions are executed strictly in sequence.  Increasingly, over
 the last twenty years, processor have used
 \emph{out-of-order}\index{instruction!handling!out-of-order}
@@ -527,7 +527,7 @@ at a regular amount per time period.
   can switch very quickly between threads in order to achieve latency hiding.
 \item[Bandwidth] is the rate at which data arrives at its destination,
   after the initial latency is overcome. Bandwidth is measured in
-  bytes (kilobyes, megabytes, gigabyes) per second or per clock cycle.
+  bytes (kilobytes, megabytes, gigabytes) per second or per clock cycle.
   The bandwidth between two memory levels is usually the product of
   the cycle speed of the channel (the \indextermbus{bus}{speed}) and
   the \indextermbus{bus}{width}: the number of bits that can be sent
@@ -624,7 +624,7 @@ Keeping values in register is often done to avoid recomputing a
 quantity. For instance, in 
 \begin{verbatim}
 t1 = sin(alpha) * x + cos(alpha) * y;
-t2 = -cos(alsph) * x + sin(alpha) * y;
+t2 = -cos(alpha) * x + sin(alpha) * y;
 \end{verbatim}
 the sine and cosine quantity will probably be kept in register. You
 can help the compiler by explicitly introducing temporary quantities:
@@ -678,6 +678,10 @@ advantage to having cache memory is that if a data item is reused
 shortly after it was first needed, it will still be in cache, and
 therefore it can be accessed much faster than if it would have to be
 brought in from memory.
+
+On a historical note, the notion of levels of memory hierarchy was
+already discussed in 1946~\cite{Burks:discussion}, motivated
+by the slowness of the memory technology at the time.
 
 \Level 2 {A motivating example}
 
@@ -893,6 +897,13 @@ long, which in the context of scientific computing implies 8 or 16
 double precision floating point numbers. The cache line size for data
 moved into L2 cache can be larger than for data moved into L1 cache.
 
+\begin{wrapfigure}{r}{3in}
+  \includegraphics[scale=.07]{graphics/stride-1}
+  \caption{Accessing 4 elements at stride 1}
+  \label{fig:stride-1}
+  %\vskip-.5in
+\end{wrapfigure}
+%
 It is important to acknowledge the existence of cache lines in coding,
 since any memory access costs the transfer of several words (see
 section~\ref{sec:coding-cacheline} for some examples). An
@@ -901,13 +912,6 @@ since access to them is effectively free. This phenomenon is visible in
 code that accesses arrays by \indexterm{stride}: elements are read or
 written at regular intervals.
 
-\begin{wrapfigure}{r}{3in}
-  \includegraphics[scale=.07]{graphics/stride-1}
-  \caption{Accessing 4 elements at stride 1}
-  \label{fig:stride-1}
-  \vskip-.5in
-\end{wrapfigure}
-%
 Stride~1 corresponds to sequential access of an array:
 \begin{verbatim}
 for (i=0; i<N; i++)
@@ -947,7 +951,7 @@ Some applications naturally lead to strides greater than~1, for
 instance, accessing only the real parts of an array of complex
 numbers (for some remarks on the practical realization of complex
 numbers see section~\ref{sec:complex}). Also, methods that use
-\indextermdef{recursive doubling} often have a code structure that
+\indexterm{recursive doubling} often have a code structure that
 exhibits non-unit strides
 \begin{verbatim}
 for (i=0; i<N/2; i++)
@@ -984,7 +988,7 @@ The simplest cache mapping strategy is \indexterm{direct
   mapping}. Suppose that memory addresses are 32 bits long, so that
 they can address 4G bytes\footnote{We implicitly use the convention
   that K,M,G suffixes refer to powers of 2 rather than~10: 1K=1024,
-  1M=1,048,576, 1G=4,294,967,296.}; suppose further that the
+  1M=1,048,576, 1G=1,073,741,824.}; suppose further that the
 cache has 8K words, that is, 64K~bytes, needing 16 bits to address.
 Direct mapping then takes from each memory address the last (`least
 significant') 16~bits,
@@ -1055,7 +1059,7 @@ would have sufficed, if it were not for the cache conflicts.
 
 \Level 2 {Associative caches}
 \label{sec:associative}
-\index{associative|seealso{cache, associative}}.
+\index{associative|seealso{cache, associative}}
 
 The problem of cache conflicts, outlined in the previous section, would
 be solved if any data item could go to any cache location. In that
@@ -1078,7 +1082,7 @@ would suffice, but in practice higher values are often encountered.
 \end{figure}
 Figure~\ref{fig:assoc-mapping} illustrates the mapping of memory
 addresses to cache locations for a direct mapped and a 3-way associative
-cache. Both caches has 12 elements, but addressed diferently.
+cache. Both caches have 12 elements, but addressed diferently.
 The direct mapped cache (left)
 will have a conflict between memory address 0~and~12, but
 in the 3-way associative cache these two addresses can be mapped
@@ -1422,7 +1426,7 @@ disjointly over the processors, so conflicting copies of data can only
 arise with knowledge of the user, and it is up to the user to
 deal with the problem. The case of shared memory is more subtle: since
 processes access the same main memory, it would seem that conflicts
-are in fact impossible. However, processor typically have some private
+are in fact impossible. However, processors typically have some private
 cache, which contains copies of data from memory, so conflicting
 copies can occur.  This situation arises in particular in multicore
 designs.
@@ -1515,12 +1519,26 @@ will likely allocate \n{x} and~\n{y} next to each other in memory, so
 there is a high chance they fall on the same cacheline. Now if one
 core updates~\n{x} and the other~\n{y}, this cacheline will
 continuously be moved between the cores. This is called
-\indexterm{false sharing|underline}.
+\indextermdef{false sharing}.
+
 The most common case of false sharing happens when
-threads update consecutive locations of an array:
+threads update consecutive locations of an array. For instance, in the
+following OpenMP fragment all threads update their own location in an
+array of partial results:
 \begin{verbatim}
-local_results[thread_num] = ....
+  local_results = new double[num_threads];
+#pragma omp parallel
+{
+  int thread_num = omp_get_thread_num();
+  for (int i=my_lo; i<my_hi; i++)
+    local_results[thread_num] = ... f(i) ...
+}
+global_result = g(local_results)
 \end{verbatim}
+While there is no actual \indexterm{race condition} (as there would be
+if the threads all updated the \n{global_result} variable),
+this code will have low performance, since the cacheline(s) with the
+\n{local_result} array will continuously be invalidated.
 
 \index{cache!coherence|)}
 
@@ -1534,6 +1552,58 @@ section~\ref{sec:multicore-block}.
 
 \index{multicore|)}
 
+\Level 0 {Node architecture and sockets}
+\label{sec:socket}
+\index{socket|(textbf}
+
+In the previous sections we have made our way down through the memory
+hierarchy, visiting registers and various cache levels, and the extent
+to which they can be private or shared. At the bottom level of the
+memory hierarchy is the memory that all cores share. This can range
+from a few Gigabyte on a lowly laptop to a few Terabyte in some
+supercomputer centers. 
+
+While this memory is shared between all cores, there is some structure
+to it. This derives from the fact that cluster \indexterm{node} can
+have more than one \indextermdef{socket}, that is, processor chip.
+\begin{figure}[ht]
+  \includegraphics[scale=.3]{stampede-node}
+  \caption{A two-socket design with co-processor: one node of the
+    Stampede supercomputer}
+  \label{fig:stampede-node}
+\end{figure}
+The shared memory on the node is typically spread over banks that are
+directly attached to one particular socket.
+This is for instance illustrated in figure~\ref{fig:stampede-node},
+which shows the two-socket node of the \indexterm{Stampede}
+supercomputer.
+
+This is an example of \indexac{NUMA} design: for a process running on
+some core, the memory attached to its socket is slightly faster to
+access than the memory attached another socket.
+
+One result of this is the \indextermdef{first-touch} phenomenon.
+Dynamically allocated memory is not actually allocated until it's
+first written. Consider now the following OpenMP
+(section~\ref{sec:openmp}) code:
+\begin{verbatim}
+double *array = (double*)malloc(N*sizeof(double));
+for (int i=0; i<N; i++)
+   array[i] = 1;
+#pragma omp parallel for
+for (int i=0; i<N; i++)
+   .... lots of work on array[i] ...
+\end{verbatim}
+Because of first-touch, the array is allocated completely in the
+memory of the socket of the master thread. In the subsequenty parallel
+loop the cores of the other socket will then have slower access to the
+memory they operate on.
+
+The solution here is to also make the initialization loop parallel,
+even if the amount of work in it may be negligible.
+
+\index{socket|)}
+
 \Level 0 {Locality and data reuse}
 
 By now it should be clear that there is more to the execution of an
@@ -1545,7 +1615,7 @@ possible. Partly this is a matter of programming cleverly, but we can
 also look at the theoretical question: does the algorithm allow for it
 to begin with.
 
-It turns out that in scientific computing there is often data often
+It turns out that in scientific computing it is often the case that data
 interacts mostly with data that is close by in some sense, which will
 lead to data locality; section~\ref{sec:locality}. Often such locality
 derives from the nature of the application, as in the case of the \acp{PDE} you
@@ -1641,7 +1711,7 @@ the bandwidth/clock speed gap by keeping data in fast cache memory.
 
 The matrix-matrix product is the heart of the \indextermbus{LINPACK}
 {benchmark}~\cite{Dongarra1987LinpackBenchmark}; see
-section~\ref{sec:top500}. Using this as the solve measure of
+section~\ref{sec:top500}. Using this as the sole measure of
 \indexterm{benchmarking} a computer may give an optimistic view of its
 performance: the matrix-matrix product is an operation
 that has considerable data reuse, so it is relatively insensitive to
@@ -1660,7 +1730,7 @@ interacts with hardware parameters and the actual implementation
 to determine performance.
 This is known as the \emph{roofline model}~\cite{Williams:2009:roofline},
 and it expresses the basic fact that performance is bounded by two factors,
-illustrated in the left graph of figure~\ref{fig:roofline}.
+illustrated in the first graph of figure~\ref{fig:roofline}.
 \begin{figure}[p]
 
   \includegraphics[scale=.1]{graphics/roofline1}
@@ -1721,7 +1791,7 @@ Since using data in cache is cheaper than getting data from main
 memory, a programmer obviously wants to code in such a way that data
 in cache is reused. While placing data in cache is not under explicit
 programmer control, even from assembly language, in most
-CPUs\footnote{Low level memory access can ben controlled by the
+CPUs\footnote{Low level memory access can be controlled by the
   programmer in the Cell processor and in some GPUs.}, it is still
 possible, knowing the behaviour of the caches, to know
 what data is in cache, and to some extent to control it.
@@ -1732,7 +1802,7 @@ The two crucial concepts here are
 \indextermsub{spatial}{locality}\index{spatial locality|see{locality,
     spatial}}. Temporal locality is the easiest to explain: this
 describes the use of a data element within a short time of its last
-use.  Since most caches have a \ac{LRU} replacement policy
+use.  Since most caches have an \ac{LRU} replacement policy
 (section~\ref{sec:lru}), if in between the two references less data
 has been referenced than the cache size, the element will still be in
 cache and therefore be quickly accessible. With other replacement
@@ -1793,11 +1863,11 @@ for (i=0; i<N*s; i+=s) {
   spatial locality is a decreasing function of the
   \indexterm{stride}~\n{s}.
 
-  Let \n{S}~be the cacheline size, then as \n{s} ranges from $1\ldots\n{S}$,
+  Let \n{S}~be the cacheline size, then as \n{s} ranges from $1\ldots\mathtt{S}$,
   the number of elements used of each cacheline goes
   down from~\n{S} to~1. Relatively speaking, this increases the cost
-  of memory traffic in the loop: if $s=1$, we load $1/S$ cachelines
-  per element; if $s=S$, we load one cacheline for each element. This
+  of memory traffic in the loop: if $\mathtt{s}=1$, we load $1/\mathtt{S}$ cachelines
+  per element; if $\mathtt{s}=\mathtt{S}$, we load one cacheline for each element. This
   effect is demonstrated in section~\ref{sec:coding-cacheline}.
 \item A second example of spatial locality worth observing involves
   the \ac{TLB} (section~\ref{sec:tlb}). If a program references
