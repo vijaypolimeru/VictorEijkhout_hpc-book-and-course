@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-7
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -940,7 +940,7 @@ same holds for the fourth element. Loading four elements now needed
 loading three cache lines instead of one, meaning that two-thirds of
 the available bandwidth has been wasted. (This second case would also incur
 three times the latency of the first, if it weren't for a hardware
-mechanism that notices the regular access patterns, and preemptively
+mechanism that notices the regular access patterns, and pre-emptively
 loads further cachelines; see section~\ref{sec:prefetch}.)
 
 Some applications naturally lead to strides greater than~1, for
@@ -1632,6 +1632,20 @@ We will discuss in some detail the
 scheduling of linear algebra operations on multicore chips;
 section~\ref{sec:multicore-block}.
 
+\Level 1 {TLB shootdown}
+
+Section~\ref{sec:tlb} explained how the \ac{TLB} is used to cache
+the translation from logical address, and therefore logical page, to
+physical page. The TLB is part of the memory unit of the \indexterm{socket}, so in
+a multi-socket design, it is possible for a process on one socket to
+change the page mapping, which makes the mapping on the other
+incorrect.
+
+One solution to this problem is called \indextermdef{TLB shoot-down}:
+the process changing the mapping generates an
+\indexterm{Inter-Processor Interrupt}, which causes the other
+processors to rebuild their TLB.
+
 \index{multicore|)}
 
 \Level 0 {Node architecture and sockets}
@@ -1670,7 +1684,7 @@ This is an example of \indexac{NUMA} design: for a process running on
 some core, the memory attached to its socket is slightly faster to
 access than the memory attached another socket.
 
-One result of this is the \indextermdef{first-touch} phenomenon.
+One result of this is the \indexterm{first-touch} phenomenon.
 Dynamically allocated memory is not actually allocated until it's
 first written. Consider now the following OpenMP
 (section~\ref{sec:openmp}) code:

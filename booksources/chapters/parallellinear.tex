@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-7
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -1849,6 +1849,65 @@ for iterative solution methods.
 \label{sec:redblackgreen}
 \input chapters/redblackgreen
 
+\Level 1 {Irregular iteration spaces}
+\label{sec:iterationspace}
+
+Applying a computational \indexterm{stencil}, in the context of
+%
+\indextermsub{explicit}{time-stepping}
+or as a sparse matrix-vector product, is parallel. However, in
+practice it may not be trivial to split the iteration space. If the
+iteration space is a Cartesian brick, it is easy, even with nested
+parallelism. However, in case of symmetry it becomes harder to make an
+even
+%
+\emph{load distribution}\index{load distribution!of iteration space}.
+%
+A~typical iteration space then looks like:
+\begin{verbatim}
+for (i=0; i<N; i++)
+  for (j=i; j<N; j++)
+    for (k=j; k<N; k++)
+\end{verbatim}
+In some cases (see~\cite{Briggs:CMB}) the bounds can be even more
+complicated, such as \verb/j=i+i%2/ or \verb/k<max(i+j,N)/.
+
+In such cases the following can be done:
+\begin{enumerate}
+\item The loop is traversed to count the total number of inner
+  iterations; this is then divide in as many parts as there processes.
+\item The loop is traversed to find the starting and ending \n{i,j,k}
+  values for each process.
+\item The loop code is then rewritten so that it can run over such an
+  \n{i,jk} subrange.
+\end{enumerate}
+
+\Level 1 {Ordering for cache efficiency}
+
+The \indextermsub{performance of}{stencil operations} is often quite
+low. The operations have no obvious cache reuse; often they resemble
+%
+\indexterm{stream operations} where long streams of data are retrieved
+from memory and used only once. If only a single stencil evaluation
+was done, that would be the end of the story. However, usually we do
+many such updates, and we can apply techniques similar to
+%
+\indexterm{loop tiling} described in section~\ref{sec:loop-tiling}.
+
+We can do better than with plain tiling if we take the shape of the
+stencil into account.
+\begin{figure}[ht]
+  \hbox{\includegraphics[scale=.045]{oblivious-stencil-1}\kern2em\relax
+    \includegraphics[scale=.045]{oblivious-stencil-2}}
+  \caption{First and second step in cache-optimized iteration space
+    traversal}
+  \label{fig:oblivious-cache}
+\end{figure}
+Figure~\ref{fig:oblivious-cache} shows (left) how we first compute a
+time-space trapezoid that is cache-contained. Then (right) we compute
+another cache-contained trapezoid that builds on the
+first~\cite{Frigo:2007:oblivious-stencil}.
+
 \Level 0 {Operator splitting}
 
 In some contexts, it is necessary to perform implicit calculations
@@ -1922,7 +1981,9 @@ operations is fairly simple: each result value of the matrix-vector
 product can be computed independently. That does not mean that there
 are other computational aspects worth remarking on.
 
-Since we are dealing with sparse matrices, stemming from some computational stencil,
+Since we are dealing with sparse matrices, stemming from some
+computational
+\indexterm{stencil},
 we take the operator point of view. In figures \ref{fig:laplaceparallel} 
 and~\ref{fig:ghost} you saw how applying a stencil in each point of the domain 
 induces certain relations between processors: in order to evaluate the matrix-vector

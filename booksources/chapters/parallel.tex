@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-7
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -1075,7 +1075,7 @@ differing ways of programming these machines. We will see all these
 aspects below. Many machines these days are 
 called \indexterm{clusters}. They can be built out of custom or
 commodity processors (if they consist of PCs, running Linux, and
-connected with Ethernet, they are referred to as \indextermsub{Beowulf}
+connected with \indexterm{Ethernet}, they are referred to as \indextermsub{Beowulf}
 {clusters}~\cite{Gropp:BeowulfBook}); since the processors are
 independent they are examples of the \ac{MIMD} or \ac{SPMD} model.
 
@@ -1724,7 +1724,7 @@ In order to get an appreciation for the fact that there is a genuine
 problem here, consider two
 simple schemes that do not `scale up':
 \begin{itemize}
-\item Ethernet is a connection scheme where all machines on a network
+\item \indextermdef{Ethernet} is a connection scheme where all machines on a network
   are on a single cable\footnote{We are here describing the original
     design of Ethernet. With the use of switches, especially in an HPC
     context, this description does not really apply anymore.}. If one
@@ -1740,11 +1740,11 @@ simple schemes that do not `scale up':
   communication channel is finite, so as more processors are connected
   to it, the capacity available to each will go down. Because of the
   scheme for resolving conflicts, the average delay before a message
-  can be started will also increase\footnote{It was initially
-  thought that ethernet would be inferior to other solutions such as
-  IBM\index{IBM}'s `token ring'. It takes fairly sophisticated statistical
-  analysis to prove that it works a lot better than was
-  naively expected.}.
+  can be started will also increase\footnote{It was initially thought
+    that ethernet would be inferior to other solutions such as
+    IBM\index{IBM}'s \indexterm{token ring} network. It takes fairly
+    sophisticated statistical analysis to prove that it works a lot
+    better than was naively expected.}.
 \item In a \indexterm{fully connected} configuration,
   each processor has one wire for
   the communications with each other processor. This scheme is perfect
